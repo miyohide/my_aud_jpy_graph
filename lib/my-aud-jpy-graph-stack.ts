@@ -49,11 +49,11 @@ export class MyAudJpyGraphStack extends cdk.Stack {
     // Lambda Function
     const fetchRateFunction = new lambda.Function(this, 'FetchRateFunction', {
       functionName: `${prefix}-fetch-rate`,
-      runtime: lambda.Runtime.RUBY_3_3,
+      runtime: lambda.Runtime.RUBY_4_0,
       handler: 'lambda_function.lambda_handler',
       code: lambda.Code.fromAsset('src', {
         bundling: {
-          image: lambda.Runtime.RUBY_3_3.bundlingImage,
+          image: lambda.Runtime.RUBY_4_0.bundlingImage,
           command: [
             'bash', '-c',
             'bundle install --path vendor/bundle && cp -r . /asset-output',
