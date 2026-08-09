@@ -1,0 +1,24 @@
+{
+  "name": "my-aud-jpy-graph",
+  "version": "1.0.0",
+  "bin": {
+    "my-aud-jpy-graph": "bin/app.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy",
+    "diff": "cdk diff"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "aws-cdk": "^2.177.0",
+    "typescript": "~5.6.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.177.0",
+    "constructs": "^10.4.2"
+  }
+}
