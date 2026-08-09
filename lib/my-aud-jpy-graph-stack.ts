@@ -4,6 +4,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Construct } from 'constructs';
 
 export class MyAudJpyGraphStack extends cdk.Stack {
@@ -27,19 +29,21 @@ export class MyAudJpyGraphStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    // S3 Bucket for static hosting
+    // S3 Bucket for static hosting (private, accessed via CloudFront)
     const webHostingBucket = new s3.Bucket(this, 'WebHostingBucket', {
       bucketName: `${prefix}-web`,
-      websiteIndexDocument: 'index.html',
-      publicReadAccess: true,
-      blockPublicAccess: new s3.BlockPublicAccess({
-        blockPublicAcls: false,
-        blockPublicPolicy: false,
-        ignorePublicAcls: false,
-        restrictPublicBuckets: false,
-      }),
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+    });
+
+    // CloudFront Distribution
+    const distribution = new cloudfront.Distribution(this, 'Distribution', {
+      defaultBehavior: {
+        origin: origins.S3BucketOrigin.withOriginAccessControl(webHostingBucket),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      defaultRootObject: 'index.html',
     });
 
     // Lambda Function
@@ -92,8 +96,8 @@ export class MyAudJpyGraphStack extends cdk.Stack {
 
     // Outputs
     new cdk.CfnOutput(this, 'WebsiteURL', {
-      value: webHostingBucket.bucketWebsiteUrl,
-      description: 'グラフ表示ページのURL',
+      value: `https://${distribution.distributionDomainName}`,
+      description: 'グラフ表示ページのURL（CloudFront）',
     });
 
     new cdk.CfnOutput(this, 'FetchRateFunctionArn', {
