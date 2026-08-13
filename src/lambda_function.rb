@@ -9,6 +9,7 @@ require 'aws-sdk-s3'
 
 DYNAMODB_TABLE_NAME = ENV['DYNAMODB_TABLE_NAME']
 S3_BUCKET_NAME = ENV['S3_BUCKET_NAME']
+AUD_HOLDINGS = 50_601
 
 def lambda_handler(event:, context:)
   # Fetch AUD/JPY exchange rate
@@ -190,6 +191,10 @@ def generate_html(rates)
           <div class="summary-item">
             <div class="summary-label">データ件数</div>
             <div class="summary-value">#{values.size} 日分</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">保有額 (#{format('%,d', AUD_HOLDINGS)} AUD)</div>
+            <div class="summary-value">#{values.last ? format('%,.0f', values.last * AUD_HOLDINGS) : '-'} 円</div>
           </div>
         </div>
       </div>
