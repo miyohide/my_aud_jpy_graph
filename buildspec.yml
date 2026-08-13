@@ -18,18 +18,22 @@ phases:
   build:
     commands:
       - echo "Packaging Lambda function..."
+      - pwd
+      - echo "Files:"
+      - ls -la
 #      - cd src
       - zip -r ../lambda-package.zip . -x ".bundle/config"
 
   post_build:
     commands:
       - echo "Deploying Lambda function..."
-      - aws lambda update-function-code
-          --function-name $LAMBDA_FUNCTION_NAME
-          --zip-file fileb://lambda-package.zip
+      - pwd
+      # - aws lambda update-function-code
+      #     --function-name $LAMBDA_FUNCTION_NAME
+      #     --zip-file fileb://lambda-package.zip
       - echo "Deploy completed successfully"
 
-artifacts:
-  files:
-    - lambda-package.zip
-  discard-paths: yes
+# artifacts:
+#   files:
+#     - lambda-package.zip
+#   discard-paths: yes
