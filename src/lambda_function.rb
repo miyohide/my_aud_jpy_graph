@@ -11,6 +11,11 @@ DYNAMODB_TABLE_NAME = ENV['DYNAMODB_TABLE_NAME']
 S3_BUCKET_NAME = ENV['S3_BUCKET_NAME']
 AUD_HOLDINGS = [50_601, 71_429]
 
+def number_with_comma(number)
+  integer_part = number.to_i.to_s
+  integer_part.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')
+end
+
 def lambda_handler(event:, context:)
   # Fetch AUD/JPY exchange rate
   rate = fetch_exchange_rate
@@ -194,8 +199,8 @@ def generate_html(rates)
           </div>
           #{AUD_HOLDINGS.map { |holding| <<~ITEM
           <div class="summary-item">
-            <div class="summary-label">保有額 (#{format('%,d', holding)} AUD)</div>
-            <div class="summary-value">#{values.last ? format('%,.0f', values.last * holding) : '-'} 円</div>
+            <div class="summary-label">保有額 (#{number_with_comma(holding)} AUD)</div>
+            <div class="summary-value">#{values.last ? number_with_comma(values.last * holding) : '-'} 円</div>
           </div>
           ITEM
           }.join}
